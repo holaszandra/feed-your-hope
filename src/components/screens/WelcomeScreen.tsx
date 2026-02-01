@@ -36,7 +36,7 @@ export function WelcomeScreen({ onSubmit, isLoading }: WelcomeScreenProps) {
       </header>
 
       {/* Fixed Bottom Input Section */}
-      <div className="fixed bottom-0 left-0 right-0 z-20 px-4 sm:px-6 pb-4 sm:pb-8 pt-6 bg-gradient-to-t from-bg-base from-70% to-transparent">
+      <div className="fixed bottom-0 left-0 right-0 z-20 px-4 sm:px-6 pb-[max(16px,env(safe-area-inset-bottom))] sm:pb-8 pt-6 bg-gradient-to-t from-bg-base from-80% to-transparent">
         <form onSubmit={handleSubmit} className="max-w-lg mx-auto">
           <label
             htmlFor="burden-input"
