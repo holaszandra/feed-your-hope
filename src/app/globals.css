@@ -1,0 +1,339 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Living Hope Design System */
+
+  /* Backgrounds */
+  --bg-base: #FDF8F3;           /* Warm cream - default background */
+  --bg-validation: #EEF4EE;      /* Soft sage tint - validation screens */
+  --bg-encouragement: #FDF0E8;   /* Warm coral tint - encouragement screens */
+  --bg-closing: #F9F0ED;         /* Dusty rose tint - closing affirmation */
+
+  /* Accent Colors */
+  --accent-gold: #E8A849;        /* Scripture references, highlights */
+  --accent-coral: #E8956A;       /* Buttons, interactive elements */
+  --accent-sage: #C5D5C5;        /* Calm accents, validation */
+  --accent-rose: #E6C4B8;        /* Soft accents */
+
+  /* Text */
+  --text-primary: #3D3D3D;       /* Body text */
+  --text-secondary: #6B6B6B;     /* Secondary text */
+  --text-forest: #4A6741;        /* Grounding text, emphasis */
+
+  /* Scripture text colors (dual-color system) */
+  --scripture-validation: #2D4A3E;    /* Bold Forest - calm, grounded */
+  --scripture-encouragement: #D2691E;  /* Pumpkin Spice - warm, forward */
+
+  /* Scripture reference colors */
+  --reference-validation: #7A9A7A;     /* Muted sage */
+  --reference-encouragement: #E8A849;  /* Warm gold */
+
+  /* Accent line colors */
+  --line-validation: rgba(74, 103, 65, 0.25);
+  --line-encouragement: rgba(210, 105, 30, 0.25);
+
+  /* Functional */
+  --border-light: rgba(74, 103, 65, 0.15);
+  --shadow-soft: rgba(0, 0, 0, 0.05);
+
+  /* Legacy colors for compatibility */
+  --cream-50: #FDF8F3;
+  --cream-100: #FDF8F3;
+  --cream-200: #FDF0E8;
+  --rose-warm: #E6C4B8;
+  --rose-blush: #F9F0ED;
+  --rose-light: #FDF0E8;
+  --gold-soft: #E8A849;
+  --gold-warm: #E8A849;
+  --gold-light: #E8D5C4;
+  --navy-deep: #3D3D3D;
+  --navy-soft: #6B6B6B;
+}
+
+html,
+body {
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  background: var(--bg-base);
+  color: var(--text-primary);
+  font-family: 'DM Sans', sans-serif;
+}
+
+/* Screen-specific backgrounds */
+.bg-screen-base {
+  background: var(--bg-base);
+}
+
+.bg-screen-validation {
+  background: var(--bg-validation);
+}
+
+.bg-screen-encouragement {
+  background: var(--bg-encouragement);
+}
+
+.bg-screen-closing {
+  background: var(--bg-closing);
+}
+
+/* Scripture container with accent bars */
+.scripture-container {
+  padding: 24px 16px;
+  margin: 24px 0;
+  position: relative;
+}
+
+.scripture-container::before,
+.scripture-container::after {
+  content: '';
+  display: block;
+  height: 1px;
+  margin: 0 auto;
+  width: 60%;
+}
+
+.scripture-container::before {
+  margin-bottom: 24px;
+}
+
+.scripture-container::after {
+  margin-top: 24px;
+}
+
+/* Validation screen - sage-tinted lines */
+.scripture-container--validation::before,
+.scripture-container--validation::after {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--line-validation) 30%,
+    var(--line-validation) 70%,
+    transparent 100%
+  );
+}
+
+/* Encouragement screen - coral-tinted lines */
+.scripture-container--encouragement::before,
+.scripture-container--encouragement::after {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--line-encouragement) 30%,
+    var(--line-encouragement) 70%,
+    transparent 100%
+  );
+}
+
+/* Base scripture text styling */
+.scripture-text {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 600;
+  font-style: normal;
+  line-height: 1.5;
+  text-align: center;
+}
+
+/* Validation screen - calm, grounded */
+.scripture-text--validation {
+  color: var(--scripture-validation);
+}
+
+/* Encouragement screen - warm, forward */
+.scripture-text--encouragement {
+  color: var(--scripture-encouragement);
+}
+
+/* Base scripture reference styling */
+.scripture-reference {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-align: center;
+  margin-top: 14px;
+  letter-spacing: 0.02em;
+}
+
+/* Validation - muted sage */
+.scripture-reference--validation {
+  color: var(--reference-validation);
+}
+
+/* Encouragement - warm gold */
+.scripture-reference--encouragement {
+  color: var(--reference-encouragement);
+}
+
+/* Button styles */
+.btn-primary {
+  background: var(--accent-coral);
+  color: white;
+  border: none;
+  border-radius: 16px;
+  padding: 16px 32px;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 500;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(232, 149, 106, 0.3);
+}
+
+/* Ambient verse animation */
+@keyframes verseFloat {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.2;
+  }
+  50% {
+    transform: translateY(-5px) scale(1.01);
+    opacity: 0.2;
+  }
+  90% {
+    opacity: 0.2;
+  }
+}
+
+.ambient-verse {
+  animation: verseFloat 10s ease-in-out infinite;
+}
+
+/* Card transitions */
+.card-enter {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.card-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 400ms ease-out, transform 400ms ease-out;
+}
+
+.card-exit {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.card-exit-active {
+  opacity: 0;
+  transform: translateY(-20px);
+  transition: opacity 300ms ease-in, transform 300ms ease-in;
+}
+
+/* Prayer emoji rating */
+.prayer-rating {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+.prayer-emoji {
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: all 200ms ease;
+  opacity: 0.3;
+}
+
+.prayer-emoji.active {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+.prayer-emoji:hover {
+  transform: scale(1.15);
+}
+
+/* Subtle pulse for loading */
+@keyframes gentlePulse {
+  0%,
+  100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.gentle-pulse {
+  animation: gentlePulse 2s ease-in-out infinite;
+}
+
+/* Subtle animated gradient for loading screen */
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 0%;
+  }
+  50% {
+    background-position: 100% 100%;
+  }
+  100% {
+    background-position: 0% 0%;
+  }
+}
+
+.animate-gradient-shift {
+  animation: gradientShift 8s ease-in-out infinite;
+}
+
+/* Scrollbar styling for textarea */
+textarea::-webkit-scrollbar {
+  width: 6px;
+}
+
+textarea::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+textarea::-webkit-scrollbar-thumb {
+  background: var(--accent-rose);
+  border-radius: 3px;
+}
+
+/* Focus states */
+textarea:focus,
+button:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--accent-coral);
+}
+
+/* Touch-friendly tap area */
+.tap-target {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* Reflection/body text styling */
+.reflection-text {
+  font-size: 1.05rem;
+  line-height: 1.8;
+  color: var(--text-primary);
+}
+
+.reflection-text .emphasis {
+  color: var(--text-forest);
+  font-weight: 500;
+}
+
+/* Closing affirmation styling */
+.affirmation-text {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 1.3rem;
+  font-weight: 500;
+  color: var(--text-forest);
+  text-align: center;
+  line-height: 1.6;
+}
