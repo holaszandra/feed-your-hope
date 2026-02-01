@@ -20,30 +20,30 @@ export function WelcomeScreen({ onSubmit, isLoading }: WelcomeScreenProps) {
   };
 
   return (
-    <div className="relative h-full welcome-gradient overflow-hidden">
+    <div className="relative h-full welcome-gradient overflow-hidden flex flex-col">
       {/* Floating gradient overlay - living light effect */}
       <div className="gradient-overlay" />
 
       {/* Header/Logo */}
-      <header className="relative z-10 pt-8 sm:pt-12 md:pt-16 text-center px-6">
+      <header className="relative z-10 pt-6 sm:pt-10 md:pt-14 text-center px-6 shrink-0">
         <h1 className="text-2xl sm:text-3xl md:text-4xl font-semibold tracking-wide text-text-primary">
           {t("appName")}
         </h1>
       </header>
 
-      {/* Centered Glowing Scripture Text */}
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none px-6 sm:px-10">
+      {/* Middle Section - Glowing Scripture Text */}
+      <div className="relative z-10 flex-1 flex items-center justify-center px-6 sm:px-10 min-h-[120px] sm:min-h-[180px]">
         <p className="glow-text font-semibold text-xl sm:text-2xl md:text-3xl lg:text-4xl text-center leading-relaxed max-w-2xl">
           {t("appTagline")}
         </p>
       </div>
 
-      {/* Fixed Bottom Input Section */}
-      <div className="fixed bottom-0 left-0 right-0 z-20 px-4 sm:px-6 pb-[max(16px,env(safe-area-inset-bottom))] sm:pb-8 pt-6">
+      {/* Bottom Input Section - flows naturally */}
+      <div className="relative z-10 px-4 sm:px-6 pb-4 sm:pb-8 shrink-0">
         <form onSubmit={handleSubmit} className="max-w-lg mx-auto">
           <label
             htmlFor="burden-input"
-            className="block text-center text-base sm:text-lg md:text-xl text-text-primary mb-3 sm:mb-4 font-medium"
+            className="block text-center text-base sm:text-lg md:text-xl text-text-primary mb-2 sm:mb-3 font-medium"
           >
             {t("welcomePrompt")}
           </label>
@@ -62,7 +62,7 @@ export function WelcomeScreen({ onSubmit, isLoading }: WelcomeScreenProps) {
                 }
               }}
               placeholder={t("welcomePlaceholder")}
-              className="w-full h-20 sm:h-28 md:h-36 p-3 sm:p-4 rounded-2xl glass-input text-text-primary placeholder:text-text-secondary/60 resize-none text-base sm:text-lg leading-relaxed focus:outline-none focus:ring-2 focus:ring-accent-coral/50 transition-all"
+              className="w-full h-16 sm:h-24 md:h-32 p-3 sm:p-4 rounded-2xl glass-input text-text-primary placeholder:text-text-secondary/60 resize-none text-base sm:text-lg leading-relaxed focus:outline-none focus:ring-2 focus:ring-accent-coral/50 transition-all"
               disabled={isLoading}
               autoFocus
             />
