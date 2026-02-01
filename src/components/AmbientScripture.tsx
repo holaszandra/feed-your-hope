@@ -28,16 +28,16 @@ export function AmbientScripture() {
   const currentVerse = ambientVerses[currentIndex];
 
   return (
-    <div className="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden px-8">
+    <div className="absolute inset-x-0 top-[25%] sm:top-[30%] md:top-1/3 flex items-start justify-center pointer-events-none overflow-hidden px-6 sm:px-8">
       <div
         className={`text-center transition-opacity duration-[2500ms] ease-in-out ${
           isVisible ? "opacity-[0.2]" : "opacity-0"
         }`}
       >
-        <p className="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-text-primary leading-relaxed max-w-4xl italic">
+        <p className="font-serif text-xl sm:text-3xl md:text-4xl lg:text-5xl text-text-primary leading-snug sm:leading-relaxed max-w-4xl italic">
           &ldquo;{currentVerse.text}&rdquo;
         </p>
-        <p className="mt-4 text-lg sm:text-xl text-accent-gold font-medium">
+        <p className="mt-2 sm:mt-4 text-base sm:text-lg md:text-xl text-accent-gold font-medium">
           — {currentVerse.reference}
         </p>
       </div>

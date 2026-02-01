@@ -28,24 +28,24 @@ export function WelcomeScreen({ onSubmit, isLoading }: WelcomeScreenProps) {
       {/* Main Content */}
       <div className="relative z-10 flex flex-col h-full">
         {/* Header */}
-        <header className="pt-12 sm:pt-16 text-center px-6">
-          <h1 className="text-4xl sm:text-5xl font-semibold tracking-wide text-text-primary">
+        <header className="pt-8 sm:pt-12 md:pt-16 text-center px-6">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-semibold tracking-wide text-text-primary">
             {t("appName")}
           </h1>
-          <p className="mt-3 text-lg sm:text-xl text-text-secondary max-w-md mx-auto">
+          <p className="mt-2 sm:mt-3 text-base sm:text-lg md:text-xl text-text-secondary max-w-md mx-auto">
             {t("appTagline")}
           </p>
         </header>
 
-        {/* Spacer */}
-        <div className="flex-1" />
+        {/* Spacer - smaller on mobile */}
+        <div className="flex-1 min-h-[120px] sm:min-h-[180px] md:min-h-[220px]" />
 
         {/* Input Section */}
-        <div className="px-6 pb-8 sm:pb-12">
+        <div className="px-4 sm:px-6 pb-6 sm:pb-8 md:pb-12">
           <form onSubmit={handleSubmit} className="max-w-lg mx-auto">
             <label
               htmlFor="burden-input"
-              className="block text-center text-lg sm:text-xl text-text-primary mb-4 font-medium"
+              className="block text-center text-base sm:text-lg md:text-xl text-text-primary mb-3 sm:mb-4 font-medium"
             >
               {t("welcomePrompt")}
             </label>
@@ -64,7 +64,7 @@ export function WelcomeScreen({ onSubmit, isLoading }: WelcomeScreenProps) {
                   }
                 }}
                 placeholder={t("welcomePlaceholder")}
-                className="w-full h-32 sm:h-36 p-4 rounded-2xl bg-white/70 backdrop-blur-sm border border-accent-rose/30 text-text-primary placeholder:text-text-secondary/50 resize-none text-base sm:text-lg leading-relaxed focus:border-accent-coral transition-colors"
+                className="w-full h-24 sm:h-32 md:h-36 p-3 sm:p-4 rounded-2xl bg-white/70 backdrop-blur-sm border border-accent-rose/30 text-text-primary placeholder:text-text-secondary/50 resize-none text-base sm:text-lg leading-relaxed focus:border-accent-coral transition-colors"
                 disabled={isLoading}
                 autoFocus
               />
