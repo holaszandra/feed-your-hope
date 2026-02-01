@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { AmbientScripture } from "@/components/AmbientScripture";
 import { useLanguage } from "@/context/LanguageContext";
 
 interface WelcomeScreenProps {
@@ -21,22 +20,26 @@ export function WelcomeScreen({ onSubmit, isLoading }: WelcomeScreenProps) {
   };
 
   return (
-    <div className="relative h-full bg-bg-base">
-      {/* Ambient Scripture Background */}
-      <AmbientScripture />
+    <div className="relative h-full welcome-gradient overflow-hidden">
+      {/* Floating gradient overlay - living light effect */}
+      <div className="gradient-overlay" />
 
-      {/* Header */}
+      {/* Header/Logo */}
       <header className="relative z-10 pt-8 sm:pt-12 md:pt-16 text-center px-6">
-        <h1 className="text-3xl sm:text-4xl md:text-5xl font-semibold tracking-wide text-text-primary">
+        <h1 className="text-2xl sm:text-3xl md:text-4xl font-semibold tracking-wide text-text-primary">
           {t("appName")}
         </h1>
-        <p className="mt-2 sm:mt-3 text-base sm:text-lg md:text-xl text-text-secondary max-w-md mx-auto">
-          {t("appTagline")}
-        </p>
       </header>
 
+      {/* Centered Glowing Scripture Text */}
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none px-6 sm:px-10">
+        <p className="glow-text font-semibold text-xl sm:text-2xl md:text-3xl lg:text-4xl text-center leading-relaxed max-w-2xl">
+          {t("appTagline")}
+        </p>
+      </div>
+
       {/* Fixed Bottom Input Section */}
-      <div className="fixed bottom-0 left-0 right-0 z-20 px-4 sm:px-6 pb-[max(16px,env(safe-area-inset-bottom))] sm:pb-8 pt-6 bg-gradient-to-t from-bg-base from-80% to-transparent">
+      <div className="fixed bottom-0 left-0 right-0 z-20 px-4 sm:px-6 pb-[max(16px,env(safe-area-inset-bottom))] sm:pb-8 pt-6">
         <form onSubmit={handleSubmit} className="max-w-lg mx-auto">
           <label
             htmlFor="burden-input"
@@ -59,7 +62,7 @@ export function WelcomeScreen({ onSubmit, isLoading }: WelcomeScreenProps) {
                 }
               }}
               placeholder={t("welcomePlaceholder")}
-              className="w-full h-20 sm:h-28 md:h-36 p-3 sm:p-4 rounded-2xl bg-white/90 backdrop-blur-sm border border-accent-rose/30 text-text-primary placeholder:text-text-secondary/50 resize-none text-base sm:text-lg leading-relaxed focus:border-accent-coral transition-colors"
+              className="w-full h-20 sm:h-28 md:h-36 p-3 sm:p-4 rounded-2xl glass-input text-text-primary placeholder:text-text-secondary/60 resize-none text-base sm:text-lg leading-relaxed focus:outline-none focus:ring-2 focus:ring-accent-coral/50 transition-all"
               disabled={isLoading}
               autoFocus
             />
