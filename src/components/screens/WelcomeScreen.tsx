@@ -37,11 +37,11 @@ export function WelcomeScreen({ onSubmit, isLoading }: WelcomeScreenProps) {
           </p>
         </header>
 
-        {/* Spacer - smaller on mobile */}
-        <div className="flex-1 min-h-[120px] sm:min-h-[180px] md:min-h-[220px]" />
+        {/* Spacer */}
+        <div className="flex-1" />
 
-        {/* Input Section */}
-        <div className="px-4 sm:px-6 pb-6 sm:pb-8 md:pb-12">
+        {/* Input Section - Fixed to bottom on mobile */}
+        <div className="px-4 sm:px-6 pb-4 sm:pb-8 md:pb-12 bg-gradient-to-t from-bg-base via-bg-base to-transparent pt-8">
           <form onSubmit={handleSubmit} className="max-w-lg mx-auto">
             <label
               htmlFor="burden-input"
@@ -64,7 +64,7 @@ export function WelcomeScreen({ onSubmit, isLoading }: WelcomeScreenProps) {
                   }
                 }}
                 placeholder={t("welcomePlaceholder")}
-                className="w-full h-24 sm:h-32 md:h-36 p-3 sm:p-4 rounded-2xl bg-white/70 backdrop-blur-sm border border-accent-rose/30 text-text-primary placeholder:text-text-secondary/50 resize-none text-base sm:text-lg leading-relaxed focus:border-accent-coral transition-colors"
+                className="w-full h-20 sm:h-28 md:h-36 p-3 sm:p-4 rounded-2xl bg-white/70 backdrop-blur-sm border border-accent-rose/30 text-text-primary placeholder:text-text-secondary/50 resize-none text-base sm:text-lg leading-relaxed focus:border-accent-coral transition-colors"
                 disabled={isLoading}
                 autoFocus
               />
