@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useLanguage } from "@/context/LanguageContext";
 import { getSavedTopics } from "@/lib/storage";
 import type { SavedTopic } from "@/types";
@@ -9,28 +9,30 @@ interface WelcomeScreenProps {
   onSubmit: (input: string) => void;
   onTopicSelect: (topic: SavedTopic) => void;
   isLoading: boolean;
+  refreshKey?: number; // Used to trigger refresh when returning to this screen
 }
 
-export function WelcomeScreen({ onSubmit, onTopicSelect, isLoading }: WelcomeScreenProps) {
+export function WelcomeScreen({ onSubmit, onTopicSelect, isLoading, refreshKey = 0 }: WelcomeScreenProps) {
   const [input, setInput] = useState("");
   const [savedTopics, setSavedTopics] = useState<SavedTopic[]>([]);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const { t } = useLanguage();
 
-  // Load saved topics on mount and whenever component re-renders
-  // Using a ref to track if this is the first render or a return visit
-  useEffect(() => {
-    const loadTopics = () => {
-      const topics = getSavedTopics();
-      setSavedTopics(topics);
-    };
+  // Load saved topics - memoized function
+  const loadTopics = useCallback(() => {
+    const topics = getSavedTopics();
+    console.log("[WelcomeScreen] Loaded topics:", topics);
+    setSavedTopics(topics);
+  }, []);
 
+  // Load topics on mount, when refreshKey changes, and on window focus
+  useEffect(() => {
     loadTopics();
 
     // Also reload when window gains focus (user returns to tab)
     window.addEventListener('focus', loadTopics);
     return () => window.removeEventListener('focus', loadTopics);
-  }, []);
+  }, [loadTopics, refreshKey]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

@@ -37,6 +37,7 @@ export default function Home() {
   const [response, setResponse] = useState<ClaudeFullResponse | null>(null);
   const [wentThroughClarifying, setWentThroughClarifying] = useState(false);
   const [selectedTopic, setSelectedTopic] = useState<SavedTopic | null>(null);
+  const [welcomeRefreshKey, setWelcomeRefreshKey] = useState(0);
   const { language } = useLanguage();
 
   // Track session start on mount
@@ -270,6 +271,8 @@ export default function Home() {
     setResponse(null);
     setWentThroughClarifying(false);
     setSelectedTopic(null);
+    // Increment refresh key to trigger topic reload in WelcomeScreen
+    setWelcomeRefreshKey((prev) => prev + 1);
   };
 
   // Render the appropriate screen content
@@ -281,6 +284,7 @@ export default function Home() {
             onSubmit={handleInputSubmit}
             onTopicSelect={handleTopicSelect}
             isLoading={isLoading}
+            refreshKey={welcomeRefreshKey}
           />
         );
       case "clarifying":
