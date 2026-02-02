@@ -22,7 +22,13 @@ export function getStorageData(): LocalStorageData {
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
     if (!stored) return defaultData;
-    return JSON.parse(stored) as LocalStorageData;
+    const parsed = JSON.parse(stored);
+    // Merge with defaults to ensure all required fields exist
+    // This handles cases where old localStorage data doesn't have new fields
+    return {
+      ...defaultData,
+      ...parsed,
+    };
   } catch {
     return defaultData;
   }
