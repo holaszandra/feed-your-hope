@@ -58,54 +58,10 @@ export function WelcomeScreen({ onSubmit, onTopicSelect, isLoading, refreshKey =
         <h1 className="text-2xl sm:text-3xl md:text-4xl font-semibold tracking-wide text-text-primary">
           {t("appName")}
         </h1>
-
-        {/* Recent Topics Toggle - only show if user has topics */}
-        {hasTopics && (
-          <button
-            onClick={() => setIsDrawerOpen(!isDrawerOpen)}
-            className="mt-3 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/30 backdrop-blur-sm text-sm text-text-primary hover:bg-white/40 transition-all"
-          >
-            <svg
-              className={`w-4 h-4 transition-transform ${isDrawerOpen ? 'rotate-180' : ''}`}
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-            </svg>
-            {t("recentTopics") || "Recent topics"}
-          </button>
-        )}
       </header>
 
-      {/* Topics Drawer */}
-      {hasTopics && (
-        <div
-          className={`relative z-10 overflow-hidden transition-all duration-300 ease-in-out ${
-            isDrawerOpen ? 'max-h-40 opacity-100' : 'max-h-0 opacity-0'
-          }`}
-        >
-          <div className="px-4 sm:px-6 py-3">
-            <div className="flex flex-wrap justify-center gap-2 max-w-lg mx-auto">
-              {savedTopics.map((topic) => (
-                <button
-                  key={topic.id}
-                  onClick={() => handleTopicClick(topic)}
-                  className="topic-tag"
-                  title={topic.context}
-                >
-                  {topic.label}
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* Middle Section - Glowing Scripture Text (fixed height) */}
-      <div className={`relative z-10 flex items-center justify-center px-6 sm:px-10 transition-all duration-300 ${
-        isDrawerOpen ? 'h-[20vh] sm:h-[25vh]' : 'h-[30vh] sm:h-[35vh]'
-      }`}>
+      <div className="relative z-10 flex items-center justify-center px-6 sm:px-10 h-[30vh] sm:h-[35vh]">
         <p className="glow-text font-semibold text-lg sm:text-2xl md:text-3xl lg:text-4xl text-center leading-relaxed max-w-2xl">
           {t("appTagline")}
         </p>
@@ -120,6 +76,48 @@ export function WelcomeScreen({ onSubmit, onTopicSelect, isLoading, refreshKey =
           >
             {t("welcomePrompt")}
           </label>
+
+          {/* Recent Topics Toggle - only show if user has topics */}
+          {hasTopics && (
+            <button
+              type="button"
+              onClick={() => setIsDrawerOpen(!isDrawerOpen)}
+              className="mb-2 mx-auto flex items-center gap-2 px-4 py-2 rounded-full bg-white/30 backdrop-blur-sm text-sm text-text-primary hover:bg-white/40 transition-all"
+            >
+              <svg
+                className={`w-4 h-4 transition-transform ${isDrawerOpen ? 'rotate-180' : ''}`}
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+              {t("recentTopics") || "Recent topics"}
+            </button>
+          )}
+
+          {/* Topics Drawer */}
+          {hasTopics && (
+            <div
+              className={`overflow-hidden transition-all duration-300 ease-in-out ${
+                isDrawerOpen ? 'max-h-32 opacity-100 mb-3' : 'max-h-0 opacity-0'
+              }`}
+            >
+              <div className="flex flex-wrap justify-center gap-2">
+                {savedTopics.map((topic) => (
+                  <button
+                    type="button"
+                    key={topic.id}
+                    onClick={() => handleTopicClick(topic)}
+                    className="topic-tag"
+                    title={topic.context}
+                  >
+                    {topic.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
 
           <div className="relative">
             <textarea
