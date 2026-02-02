@@ -31,15 +31,15 @@ export function WelcomeScreen({ onSubmit, isLoading }: WelcomeScreenProps) {
         </h1>
       </header>
 
-      {/* Middle Section - Glowing Scripture Text */}
-      <div className="relative z-10 flex-1 flex items-center justify-center px-6 sm:px-10 min-h-[120px] sm:min-h-[180px]">
-        <p className="glow-text font-semibold text-xl sm:text-2xl md:text-3xl lg:text-4xl text-center leading-relaxed max-w-2xl">
+      {/* Middle Section - Glowing Scripture Text (fixed height) */}
+      <div className="relative z-10 h-[30vh] sm:h-[35vh] flex items-center justify-center px-6 sm:px-10">
+        <p className="glow-text font-semibold text-lg sm:text-2xl md:text-3xl lg:text-4xl text-center leading-relaxed max-w-2xl">
           {t("appTagline")}
         </p>
       </div>
 
-      {/* Bottom Input Section - flows naturally */}
-      <div className="relative z-10 px-4 sm:px-6 pb-4 sm:pb-8 shrink-0">
+      {/* Bottom Input Section - takes remaining space */}
+      <div className="relative z-10 flex-1 px-4 sm:px-6 pb-4 sm:pb-6">
         <form onSubmit={handleSubmit} className="max-w-lg mx-auto">
           <label
             htmlFor="burden-input"
