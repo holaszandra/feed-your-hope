@@ -131,6 +131,10 @@ export default function Home() {
       // Direct response without clarification
       setResponse(data as ClaudeFullResponse);
 
+      // Save topic even without clarifying question
+      saveTopic(input);
+      trackEvent(EVENTS.TOPIC_SAVED);
+
       // Save verses to localStorage
       if (data.validation?.scripture) {
         addSeenVerses([data.validation.scripture.reference]);

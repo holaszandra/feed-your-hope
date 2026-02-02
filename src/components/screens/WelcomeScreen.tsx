@@ -17,10 +17,19 @@ export function WelcomeScreen({ onSubmit, onTopicSelect, isLoading }: WelcomeScr
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const { t } = useLanguage();
 
-  // Load saved topics on mount
+  // Load saved topics on mount and whenever component re-renders
+  // Using a ref to track if this is the first render or a return visit
   useEffect(() => {
-    const topics = getSavedTopics();
-    setSavedTopics(topics);
+    const loadTopics = () => {
+      const topics = getSavedTopics();
+      setSavedTopics(topics);
+    };
+
+    loadTopics();
+
+    // Also reload when window gains focus (user returns to tab)
+    window.addEventListener('focus', loadTopics);
+    return () => window.removeEventListener('focus', loadTopics);
   }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
