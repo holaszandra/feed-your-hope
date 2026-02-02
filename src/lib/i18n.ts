@@ -13,6 +13,7 @@ export const translations = {
     welcomePlaceholder: "Share what's on your mind...",
     welcomeButton: "Begin",
     welcomeButtonLoading: "Finding your word...",
+    recentTopics: "Recent topics",
 
     // Clarifying Screen
     clarifyingPlaceholder: "Share more...",
@@ -48,6 +49,7 @@ export const translations = {
     welcomePlaceholder: "Oszd meg, mi jár a fejedben...",
     welcomeButton: "Kezdés",
     welcomeButtonLoading: "Keresem az Igét...",
+    recentTopics: "Korábbi témák",
 
     // Clarifying Screen
     clarifyingPlaceholder: "Mesélj még...",

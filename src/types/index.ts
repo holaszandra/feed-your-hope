@@ -61,11 +61,23 @@ export interface AnalyticsEvent {
   data?: Record<string, unknown>;
 }
 
+export interface SavedTopic {
+  id: string;
+  label: string; // Short label for the tag (e.g., "Work stress", "Family")
+  context: string; // The original user input
+  clarifyingAnswer?: string; // What they answered in clarifying
+  keywords: string[]; // Extracted keywords for matching
+  createdAt: string;
+  lastVisited: string;
+  visitCount: number;
+}
+
 export interface LocalStorageData {
   seenVerses: string[];
   liesIdentified: StoredLie[];
   feedbackHistory: FeedbackEntry[];
   analytics: AnalyticsEvent[];
+  savedTopics: SavedTopic[];
 }
 
 export type Screen =

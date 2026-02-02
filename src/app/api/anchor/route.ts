@@ -181,6 +181,12 @@ If someone expresses thoughts of self-harm, suicide, or immediate danger:
 - You do not lecture or preach
 - You do not use churchy clichés ("God has a plan," "Just trust Him," "Everything happens for a reason")`;
 
+interface ReturningTopicContext {
+  context: string;
+  label: string;
+  previousAnswer?: string;
+}
+
 interface RequestBody {
   userInput: string;
   clarifyingAnswer?: string;
@@ -189,6 +195,7 @@ interface RequestBody {
   isRetry?: boolean;
   previousVerses?: string[];
   language?: string;
+  returningTopic?: ReturningTopicContext | null;
 }
 
 // Language-specific instructions
@@ -220,6 +227,7 @@ export async function POST(request: NextRequest) {
       isRetry = false,
       previousVerses = [],
       language = "en",
+      returningTopic = null,
     } = body;
 
     // Get language-specific instructions
@@ -236,6 +244,21 @@ export async function POST(request: NextRequest) {
 They then answered my clarifying question with: "${clarifyingAnswer}"
 
 Please provide the full response with validation (acknowledgment + lament scripture + who else felt this + bridge), encouragement (promise scripture + application + purpose), lie (if appropriate), and affirmation.`;
+    } else if (returningTopic) {
+      // Returning user who selected a previous topic
+      userMessage = `This is a RETURNING user who previously shared about: "${returningTopic.context}"
+Topic area: ${returningTopic.label}
+${returningTopic.previousAnswer ? `Last time, they clarified: "${returningTopic.previousAnswer}"` : ""}
+
+This user is coming back to explore this topic again. Generate a warm, brief clarifying question that:
+1. Acknowledges they've been here before with this topic
+2. Asks if the situation has changed or if something new has come up
+3. Invites them to share what's current
+
+Keep your clarifyingQuestion to 2-3 sentences max. Be warm and welcoming.
+Your biblicalContext should briefly acknowledge their return.
+
+IMPORTANT: Always respond with needsClarification: true for returning users so they can share what's current.`;
     } else {
       // First call - initial input
       userMessage = `The user shared: "${userInput}"

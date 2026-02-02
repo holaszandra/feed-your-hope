@@ -18,9 +18,12 @@ import {
   addSeenVerses,
   addLieIdentified,
   trackEvent,
+  saveTopic,
+  updateTopicVisit,
   EVENTS,
 } from "@/lib/storage";
 import { useLanguage } from "@/context/LanguageContext";
+import type { SavedTopic } from "@/types";
 
 export default function Home() {
   const [currentScreen, setCurrentScreen] = useState<Screen>("welcome");
@@ -33,6 +36,7 @@ export default function Home() {
   const [clarifyingAnswer, setClarifyingAnswer] = useState("");
   const [response, setResponse] = useState<ClaudeFullResponse | null>(null);
   const [wentThroughClarifying, setWentThroughClarifying] = useState(false);
+  const [selectedTopic, setSelectedTopic] = useState<SavedTopic | null>(null);
   const { language } = useLanguage();
 
   // Track session start on mount
@@ -45,7 +49,8 @@ export default function Home() {
     input: string,
     answer?: string,
     isRetry = false,
-    previousVerses: string[] = []
+    previousVerses: string[] = [],
+    returningTopic?: SavedTopic | null
   ) => {
     setIsLoading(true);
 
@@ -61,6 +66,11 @@ export default function Home() {
           isRetry,
           previousVerses,
           language,
+          returningTopic: returningTopic ? {
+            context: returningTopic.context,
+            label: returningTopic.label,
+            previousAnswer: returningTopic.clarifyingAnswer,
+          } : null,
         }),
       });
 
@@ -144,6 +154,10 @@ export default function Home() {
     const data: ClaudeFullResponse = await callClaude(userInput, answer);
     setResponse(data);
 
+    // Save topic after clarifying answer
+    saveTopic(userInput, answer);
+    trackEvent(EVENTS.TOPIC_SAVED);
+
     // Save verses to localStorage
     if (data.validation?.scripture) {
       addSeenVerses([data.validation.scripture.reference]);
@@ -154,6 +168,38 @@ export default function Home() {
 
     setCurrentScreen("validation");
     trackEvent(EVENTS.SCRIPTURE_VIEWED);
+  };
+
+  // Handle topic selection from saved topics
+  const handleTopicSelect = async (topic: SavedTopic) => {
+    setSelectedTopic(topic);
+    setUserInput(topic.context);
+    updateTopicVisit(topic.id);
+    trackEvent(EVENTS.TOPIC_SELECTED, { topicId: topic.id, label: topic.label });
+    setCurrentScreen("loading");
+
+    // Call Claude with returning user context
+    const data: ClaudeFirstResponse = await callClaude(topic.context, undefined, false, [], topic);
+
+    if (data.needsClarification) {
+      setClarifyingData({
+        question: data.clarifyingQuestion || "What's changed since last time?",
+        biblicalContext: data.biblicalContext || "Welcome back. Let's continue where we left off.",
+      });
+      setCurrentScreen("clarifying");
+    } else {
+      setResponse(data as ClaudeFullResponse);
+
+      if (data.validation?.scripture) {
+        addSeenVerses([data.validation.scripture.reference]);
+      }
+      if (data.encouragement?.scripture) {
+        addSeenVerses([data.encouragement.scripture.reference]);
+      }
+
+      setCurrentScreen("validation");
+      trackEvent(EVENTS.SCRIPTURE_VIEWED);
+    }
   };
 
   // Navigation handlers
@@ -219,13 +265,20 @@ export default function Home() {
     setClarifyingAnswer("");
     setResponse(null);
     setWentThroughClarifying(false);
+    setSelectedTopic(null);
   };
 
   // Render the appropriate screen content
   const renderScreen = () => {
     switch (currentScreen) {
       case "welcome":
-        return <WelcomeScreen onSubmit={handleInputSubmit} isLoading={isLoading} />;
+        return (
+          <WelcomeScreen
+            onSubmit={handleInputSubmit}
+            onTopicSelect={handleTopicSelect}
+            isLoading={isLoading}
+          />
+        );
       case "clarifying":
         return clarifyingData ? (
           <ClarifyingScreen
