@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useLanguage } from "@/context/LanguageContext";
-import { getSavedTopics } from "@/lib/storage";
+import { getDisplayTopics } from "@/lib/storage";
 import type { SavedTopic } from "@/types";
 
 interface WelcomeScreenProps {
@@ -18,9 +18,9 @@ export function WelcomeScreen({ onSubmit, onTopicSelect, isLoading, refreshKey =
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const { t } = useLanguage();
 
-  // Load saved topics - memoized function
+  // Load saved topics - memoized function (only last 3 for display)
   const loadTopics = useCallback(() => {
-    const topics = getSavedTopics();
+    const topics = getDisplayTopics();
     console.log("[WelcomeScreen] Loaded topics:", topics);
     setSavedTopics(topics);
   }, []);
@@ -100,20 +100,23 @@ export function WelcomeScreen({ onSubmit, onTopicSelect, isLoading, refreshKey =
           {hasTopics && (
             <div
               className={`overflow-hidden transition-all duration-300 ease-in-out ${
-                isDrawerOpen ? 'max-h-32 opacity-100 mb-3' : 'max-h-0 opacity-0'
+                isDrawerOpen ? 'max-h-48 opacity-100 mb-3' : 'max-h-0 opacity-0'
               }`}
             >
               <div className="flex flex-wrap justify-center gap-2">
                 {savedTopics.map((topic) => (
-                  <button
-                    type="button"
-                    key={topic.id}
-                    onClick={() => handleTopicClick(topic)}
-                    className="topic-tag"
-                    title={topic.context}
-                  >
-                    {topic.label}
-                  </button>
+                  // Display all tags for each topic
+                  (topic.tags || [topic.label]).map((tag, tagIndex) => (
+                    <button
+                      type="button"
+                      key={`${topic.id}-${tagIndex}`}
+                      onClick={() => handleTopicClick(topic)}
+                      className="topic-tag"
+                      title={topic.context}
+                    >
+                      {tag}
+                    </button>
+                  ))
                 ))}
               </div>
             </div>

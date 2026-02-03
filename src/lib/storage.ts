@@ -174,12 +174,24 @@ function generateLabel(keywords: string[], context: string): string {
 }
 
 /**
- * Save a topic after user completes clarifying question
+ * Save a topic after user completes a session
+ * Now accepts Claude-generated tags for smarter labeling
  */
-export function saveTopic(userInput: string, clarifyingAnswer?: string): SavedTopic {
+export function saveTopic(
+  userInput: string,
+  clarifyingAnswer?: string,
+  claudeTags?: string[]
+): SavedTopic {
   const data = getStorageData();
   const keywords = extractKeywords(userInput + " " + (clarifyingAnswer || ""));
-  const label = generateLabel(keywords, userInput);
+
+  // Use Claude's tags if provided, otherwise fall back to old keyword-based label
+  const tags = claudeTags && claudeTags.length > 0
+    ? claudeTags
+    : [generateLabel(keywords, userInput)];
+
+  // Use first tag as the label for backward compatibility
+  const label = tags[0];
   const now = new Date().toISOString();
 
   // Check if similar topic exists (based on keywords overlap)
@@ -195,6 +207,11 @@ export function saveTopic(userInput: string, clarifyingAnswer?: string): SavedTo
     if (clarifyingAnswer) {
       existingTopic.clarifyingAnswer = clarifyingAnswer;
     }
+    // Update tags if Claude provided new ones
+    if (claudeTags && claudeTags.length > 0) {
+      existingTopic.tags = claudeTags;
+      existingTopic.label = claudeTags[0];
+    }
     saveStorageData(data);
     return existingTopic;
   }
@@ -206,6 +223,7 @@ export function saveTopic(userInput: string, clarifyingAnswer?: string): SavedTo
     context: userInput,
     clarifyingAnswer,
     keywords,
+    tags,
     createdAt: now,
     lastVisited: now,
     visitCount: 1,
@@ -222,7 +240,19 @@ export function saveTopic(userInput: string, clarifyingAnswer?: string): SavedTo
  * Get all saved topics
  */
 export function getSavedTopics(): SavedTopic[] {
-  return getStorageData().savedTopics;
+  const topics = getStorageData().savedTopics;
+  // Ensure all topics have tags array (for backward compatibility with old data)
+  return topics.map(topic => ({
+    ...topic,
+    tags: topic.tags || [topic.label]
+  }));
+}
+
+/**
+ * Get topics for DISPLAY (last 3 sessions only)
+ */
+export function getDisplayTopics(): SavedTopic[] {
+  return getSavedTopics().slice(0, 3);
 }
 
 /**

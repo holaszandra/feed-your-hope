@@ -27,6 +27,7 @@ export interface ClaudeFirstResponse {
   encouragement?: EncouragementSection;
   lie?: string;
   affirmation?: string;
+  topicTags?: string[]; // Claude-generated specific topic tags
 }
 
 export interface ClaudeFullResponse {
@@ -34,6 +35,7 @@ export interface ClaudeFullResponse {
   encouragement: EncouragementSection;
   lie?: string; // Optional - may be skipped if not enough context
   affirmation: string;
+  topicTags?: string[]; // Claude-generated specific topic tags
 }
 
 export interface SessionData {
@@ -63,10 +65,11 @@ export interface AnalyticsEvent {
 
 export interface SavedTopic {
   id: string;
-  label: string; // Short label for the tag (e.g., "Work stress", "Family")
+  label: string; // Short label for the tag (e.g., "Work stress", "Family") - kept for backward compatibility
   context: string; // The original user input
   clarifyingAnswer?: string; // What they answered in clarifying
-  keywords: string[]; // Extracted keywords for matching
+  keywords: string[]; // Extracted keywords for matching - kept for backward compatibility
+  tags: string[]; // Claude-generated specific topic tags (e.g., ["singleness", "injustice", "feeling forgotten"])
   createdAt: string;
   lastVisited: string;
   visitCount: number;

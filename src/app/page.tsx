@@ -132,8 +132,8 @@ export default function Home() {
       // Direct response without clarification
       setResponse(data as ClaudeFullResponse);
 
-      // Save topic even without clarifying question
-      saveTopic(input);
+      // Save topic even without clarifying question, using Claude's tags
+      saveTopic(input, undefined, data.topicTags);
       trackEvent(EVENTS.TOPIC_SAVED);
 
       // Save verses to localStorage
@@ -159,8 +159,8 @@ export default function Home() {
     const data: ClaudeFullResponse = await callClaude(userInput, answer);
     setResponse(data);
 
-    // Save topic after clarifying answer
-    saveTopic(userInput, answer);
+    // Save topic after clarifying answer, using Claude's tags
+    saveTopic(userInput, answer, data.topicTags);
     trackEvent(EVENTS.TOPIC_SAVED);
 
     // Save verses to localStorage
