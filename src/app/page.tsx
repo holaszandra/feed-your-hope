@@ -20,10 +20,12 @@ import {
   trackEvent,
   saveTopic,
   updateTopicVisit,
+  saveSessionHistory,
+  createFallbackSummary,
   EVENTS,
 } from "@/lib/storage";
 import { useLanguage } from "@/context/LanguageContext";
-import type { SavedTopic } from "@/types";
+import type { SavedTopic, SessionHistory } from "@/types";
 
 export default function Home() {
   const [currentScreen, setCurrentScreen] = useState<Screen>("welcome");
@@ -37,6 +39,7 @@ export default function Home() {
   const [response, setResponse] = useState<ClaudeFullResponse | null>(null);
   const [wentThroughClarifying, setWentThroughClarifying] = useState(false);
   const [selectedTopic, setSelectedTopic] = useState<SavedTopic | null>(null);
+  const [selectedSession, setSelectedSession] = useState<SessionHistory | null>(null);
   const [welcomeRefreshKey, setWelcomeRefreshKey] = useState(0);
   const { language } = useLanguage();
 
@@ -51,7 +54,8 @@ export default function Home() {
     answer?: string,
     isRetry = false,
     previousVerses: string[] = [],
-    returningTopic?: SavedTopic | null
+    returningTopic?: SavedTopic | null,
+    returningSession?: SessionHistory | null
   ) => {
     setIsLoading(true);
 
@@ -71,6 +75,11 @@ export default function Home() {
             context: returningTopic.context,
             label: returningTopic.label,
             previousAnswer: returningTopic.clarifyingAnswer,
+          } : null,
+          returningSession: returningSession ? {
+            summary: returningSession.summary,
+            context: returningSession.context,
+            clarifyingAnswer: returningSession.clarifyingAnswer,
           } : null,
         }),
       });
@@ -132,8 +141,10 @@ export default function Home() {
       // Direct response without clarification
       setResponse(data as ClaudeFullResponse);
 
-      // Save topic even without clarifying question, using Claude's tags
+      // Save topic (legacy) and session history (new)
       saveTopic(input, undefined, data.topicTags);
+      const summary = data.sessionSummary || createFallbackSummary(data.topicTags, input);
+      saveSessionHistory(summary, input);
       trackEvent(EVENTS.TOPIC_SAVED);
 
       // Save verses to localStorage
@@ -159,8 +170,10 @@ export default function Home() {
     const data: ClaudeFullResponse = await callClaude(userInput, answer);
     setResponse(data);
 
-    // Save topic after clarifying answer, using Claude's tags
+    // Save topic (legacy) and session history (new)
     saveTopic(userInput, answer, data.topicTags);
+    const summary = data.sessionSummary || createFallbackSummary(data.topicTags, userInput);
+    saveSessionHistory(summary, userInput, answer);
     trackEvent(EVENTS.TOPIC_SAVED);
 
     // Save verses to localStorage
@@ -175,7 +188,38 @@ export default function Home() {
     trackEvent(EVENTS.SCRIPTURE_VIEWED);
   };
 
-  // Handle topic selection from saved topics
+  // Handle session selection from recent sessions (new approach)
+  const handleSessionSelect = async (session: SessionHistory) => {
+    setSelectedSession(session);
+    setUserInput(session.context);
+    trackEvent(EVENTS.TOPIC_SELECTED, { sessionId: session.id, summary: session.summary });
+    setCurrentScreen("loading");
+
+    // Call Claude with returning session context
+    const data: ClaudeFirstResponse = await callClaude(session.context, undefined, false, [], null, session);
+
+    if (data.needsClarification) {
+      setClarifyingData({
+        question: data.clarifyingQuestion || "What's changed since last time?",
+        biblicalContext: data.biblicalContext || "Welcome back. Let's continue where we left off.",
+      });
+      setCurrentScreen("clarifying");
+    } else {
+      setResponse(data as ClaudeFullResponse);
+
+      if (data.validation?.scripture) {
+        addSeenVerses([data.validation.scripture.reference]);
+      }
+      if (data.encouragement?.scripture) {
+        addSeenVerses([data.encouragement.scripture.reference]);
+      }
+
+      setCurrentScreen("validation");
+      trackEvent(EVENTS.SCRIPTURE_VIEWED);
+    }
+  };
+
+  // Legacy: Handle topic selection from saved topics (kept for backward compatibility)
   const handleTopicSelect = async (topic: SavedTopic) => {
     setSelectedTopic(topic);
     setUserInput(topic.context);
@@ -271,7 +315,8 @@ export default function Home() {
     setResponse(null);
     setWentThroughClarifying(false);
     setSelectedTopic(null);
-    // Increment refresh key to trigger topic reload in WelcomeScreen
+    setSelectedSession(null);
+    // Increment refresh key to trigger session reload in WelcomeScreen
     setWelcomeRefreshKey((prev) => prev + 1);
   };
 
@@ -282,7 +327,7 @@ export default function Home() {
         return (
           <WelcomeScreen
             onSubmit={handleInputSubmit}
-            onTopicSelect={handleTopicSelect}
+            onSessionSelect={handleSessionSelect}
             isLoading={isLoading}
             refreshKey={welcomeRefreshKey}
           />

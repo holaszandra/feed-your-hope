@@ -4,6 +4,7 @@ import type {
   FeedbackEntry,
   AnalyticsEvent,
   SavedTopic,
+  SessionHistory,
 } from "@/types";
 
 const STORAGE_KEY = "anchor_data";
@@ -14,6 +15,7 @@ const defaultData: LocalStorageData = {
   feedbackHistory: [],
   analytics: [],
   savedTopics: [],
+  sessionHistory: [],
 };
 
 export function getStorageData(): LocalStorageData {
@@ -25,10 +27,28 @@ export function getStorageData(): LocalStorageData {
     const parsed = JSON.parse(stored);
     // Merge with defaults to ensure all required fields exist
     // This handles cases where old localStorage data doesn't have new fields
-    return {
+    const data = {
       ...defaultData,
       ...parsed,
     };
+
+    // Migration: Clear old sessionHistory that may have individual tags as summaries
+    // Valid session summaries should be 3-6 words, not single words
+    if (data.sessionHistory && data.sessionHistory.length > 0) {
+      const validSessions = data.sessionHistory.filter((session: SessionHistory) => {
+        // A valid session summary should contain at least 2 words or have "&" in it
+        const words = session.summary.trim().split(/\s+/);
+        return words.length >= 2 || session.summary.includes("&");
+      });
+
+      // If we filtered out invalid sessions, save the cleaned data
+      if (validSessions.length !== data.sessionHistory.length) {
+        data.sessionHistory = validSessions;
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      }
+    }
+
+    return data;
   } catch {
     return defaultData;
   }
@@ -250,9 +270,66 @@ export function getSavedTopics(): SavedTopic[] {
 
 /**
  * Get topics for DISPLAY (last 3 sessions only)
+ * @deprecated Use getRecentSessions() instead for cleaner session phrases
  */
 export function getDisplayTopics(): SavedTopic[] {
   return getSavedTopics().slice(0, 3);
+}
+
+// ========================================
+// SESSION HISTORY (New cleaner approach)
+// ========================================
+
+/**
+ * Save a session summary for display in "Recent topics"
+ */
+export function saveSessionHistory(
+  summary: string,
+  context: string,
+  clarifyingAnswer?: string
+): SessionHistory {
+  const data = getStorageData();
+  const newSession: SessionHistory = {
+    id: `session_${Date.now()}`,
+    date: new Date().toISOString(),
+    summary,
+    context,
+    clarifyingAnswer,
+  };
+
+  // Keep only the 5 most recent sessions
+  data.sessionHistory = [newSession, ...(data.sessionHistory || [])].slice(0, 5);
+  saveStorageData(data);
+
+  return newSession;
+}
+
+/**
+ * Get recent sessions for display (max 3)
+ */
+export function getRecentSessions(): SessionHistory[] {
+  const data = getStorageData();
+  return (data.sessionHistory || []).slice(0, 3);
+}
+
+/**
+ * Create a fallback summary from tags if Claude doesn't return a sessionSummary
+ * MUST always return a multi-word phrase (at least 2 words)
+ */
+export function createFallbackSummary(tags: string[] | undefined, userInput: string): string {
+  if (tags && tags.length >= 2) {
+    return `${tags[0]} & ${tags[1]}`;
+  }
+  if (tags && tags.length === 1) {
+    // Single tag - add context to make it a phrase
+    return `${tags[0]} & finding peace`;
+  }
+  // Ultimate fallback: use first few words of user input
+  const words = userInput.split(' ').filter(w => w.length > 2).slice(0, 4);
+  if (words.length >= 2) {
+    return words.slice(0, 3).join(' ');
+  }
+  return "Personal reflection";
 }
 
 /**

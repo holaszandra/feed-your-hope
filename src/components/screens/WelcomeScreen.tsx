@@ -2,37 +2,37 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useLanguage } from "@/context/LanguageContext";
-import { getDisplayTopics } from "@/lib/storage";
-import type { SavedTopic } from "@/types";
+import { getRecentSessions } from "@/lib/storage";
+import type { SessionHistory } from "@/types";
 
 interface WelcomeScreenProps {
   onSubmit: (input: string) => void;
-  onTopicSelect: (topic: SavedTopic) => void;
+  onSessionSelect: (session: SessionHistory) => void;
   isLoading: boolean;
   refreshKey?: number; // Used to trigger refresh when returning to this screen
 }
 
-export function WelcomeScreen({ onSubmit, onTopicSelect, isLoading, refreshKey = 0 }: WelcomeScreenProps) {
+export function WelcomeScreen({ onSubmit, onSessionSelect, isLoading, refreshKey = 0 }: WelcomeScreenProps) {
   const [input, setInput] = useState("");
-  const [savedTopics, setSavedTopics] = useState<SavedTopic[]>([]);
+  const [recentSessions, setRecentSessions] = useState<SessionHistory[]>([]);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const { t } = useLanguage();
 
-  // Load saved topics - memoized function (only last 3 for display)
-  const loadTopics = useCallback(() => {
-    const topics = getDisplayTopics();
-    console.log("[WelcomeScreen] Loaded topics:", topics);
-    setSavedTopics(topics);
+  // Load recent sessions - memoized function (only last 3 for display)
+  const loadSessions = useCallback(() => {
+    const sessions = getRecentSessions();
+    console.log("[WelcomeScreen] Loaded sessions:", sessions);
+    setRecentSessions(sessions);
   }, []);
 
-  // Load topics on mount, when refreshKey changes, and on window focus
+  // Load sessions on mount, when refreshKey changes, and on window focus
   useEffect(() => {
-    loadTopics();
+    loadSessions();
 
     // Also reload when window gains focus (user returns to tab)
-    window.addEventListener('focus', loadTopics);
-    return () => window.removeEventListener('focus', loadTopics);
-  }, [loadTopics, refreshKey]);
+    window.addEventListener('focus', loadSessions);
+    return () => window.removeEventListener('focus', loadSessions);
+  }, [loadSessions, refreshKey]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,12 +41,12 @@ export function WelcomeScreen({ onSubmit, onTopicSelect, isLoading, refreshKey =
     }
   };
 
-  const handleTopicClick = (topic: SavedTopic) => {
+  const handleSessionClick = (session: SessionHistory) => {
     setIsDrawerOpen(false);
-    onTopicSelect(topic);
+    onSessionSelect(session);
   };
 
-  const hasTopics = savedTopics.length > 0;
+  const hasSessions = recentSessions.length > 0;
 
   return (
     <div className="relative h-full welcome-gradient overflow-hidden flex flex-col">
@@ -77,8 +77,8 @@ export function WelcomeScreen({ onSubmit, onTopicSelect, isLoading, refreshKey =
             {t("welcomePrompt")}
           </label>
 
-          {/* Recent Topics Toggle - only show if user has topics */}
-          {hasTopics && (
+          {/* Recent Sessions Toggle - only show if user has sessions */}
+          {hasSessions && (
             <button
               type="button"
               onClick={() => setIsDrawerOpen(!isDrawerOpen)}
@@ -96,27 +96,24 @@ export function WelcomeScreen({ onSubmit, onTopicSelect, isLoading, refreshKey =
             </button>
           )}
 
-          {/* Topics Drawer */}
-          {hasTopics && (
+          {/* Sessions Drawer - shows session summary phrases */}
+          {hasSessions && (
             <div
               className={`overflow-hidden transition-all duration-300 ease-in-out ${
-                isDrawerOpen ? 'max-h-48 opacity-100 mb-3' : 'max-h-0 opacity-0'
+                isDrawerOpen ? 'max-h-32 opacity-100 mb-3' : 'max-h-0 opacity-0'
               }`}
             >
               <div className="flex flex-wrap justify-center gap-2">
-                {savedTopics.map((topic) => (
-                  // Display all tags for each topic
-                  (topic.tags || [topic.label]).map((tag, tagIndex) => (
-                    <button
-                      type="button"
-                      key={`${topic.id}-${tagIndex}`}
-                      onClick={() => handleTopicClick(topic)}
-                      className="topic-tag"
-                      title={topic.context}
-                    >
-                      {tag}
-                    </button>
-                  ))
+                {recentSessions.map((session) => (
+                  <button
+                    type="button"
+                    key={session.id}
+                    onClick={() => handleSessionClick(session)}
+                    className="px-4 py-2 bg-white/80 backdrop-blur-sm rounded-full text-sm text-text-primary border border-white/50 hover:bg-white/90 hover:border-accent-coral/30 transition-all shadow-sm"
+                    title={session.context}
+                  >
+                    {session.summary}
+                  </button>
                 ))}
               </div>
             </div>

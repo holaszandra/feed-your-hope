@@ -27,7 +27,8 @@ export interface ClaudeFirstResponse {
   encouragement?: EncouragementSection;
   lie?: string;
   affirmation?: string;
-  topicTags?: string[]; // Claude-generated specific topic tags
+  topicTags?: string[]; // Claude-generated specific topic tags (legacy, kept for backward compatibility)
+  sessionSummary?: string; // Claude-generated session summary phrase (e.g., "Job rejection & losing confidence")
 }
 
 export interface ClaudeFullResponse {
@@ -35,7 +36,8 @@ export interface ClaudeFullResponse {
   encouragement: EncouragementSection;
   lie?: string; // Optional - may be skipped if not enough context
   affirmation: string;
-  topicTags?: string[]; // Claude-generated specific topic tags
+  topicTags?: string[]; // Claude-generated specific topic tags (legacy, kept for backward compatibility)
+  sessionSummary?: string; // Claude-generated session summary phrase (e.g., "Job rejection & losing confidence")
 }
 
 export interface SessionData {
@@ -70,9 +72,18 @@ export interface SavedTopic {
   clarifyingAnswer?: string; // What they answered in clarifying
   keywords: string[]; // Extracted keywords for matching - kept for backward compatibility
   tags: string[]; // Claude-generated specific topic tags (e.g., ["singleness", "injustice", "feeling forgotten"])
+  sessionSummary?: string; // Claude-generated session summary phrase (e.g., "Job rejection & losing confidence")
   createdAt: string;
   lastVisited: string;
   visitCount: number;
+}
+
+export interface SessionHistory {
+  id: string;
+  date: string;
+  summary: string; // e.g., "Job rejection & losing confidence"
+  context: string; // The original user input for context when returning
+  clarifyingAnswer?: string;
 }
 
 export interface LocalStorageData {
@@ -81,6 +92,7 @@ export interface LocalStorageData {
   feedbackHistory: FeedbackEntry[];
   analytics: AnalyticsEvent[];
   savedTopics: SavedTopic[];
+  sessionHistory: SessionHistory[]; // New: stores session summaries for display
 }
 
 export type Screen =

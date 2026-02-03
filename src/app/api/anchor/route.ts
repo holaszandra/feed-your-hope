@@ -181,40 +181,43 @@ If someone expresses thoughts of self-harm, suicide, or immediate danger:
 - You do not lecture or preach
 - You do not use churchy clichés ("God has a plan," "Just trust Him," "Everything happens for a reason")
 
-## SESSION TOPIC TAGS
+## SESSION SUMMARY
 
-At the END of your full response (Format 2 only, when needsClarification is false), include a JSON field called "topicTags" with tags that capture this person's specific struggle.
+At the END of your full response (Format 2 only, when needsClarification is false), include a JSON field called "sessionSummary" - a short phrase that captures this person's struggle.
 
-**Rules for good tags:**
-- Generate 2-4 tags maximum
-- Each tag should be 1-3 words
-- Tags should make the user think "yes, that's exactly it"
-- Combine the SPECIFIC situation with the EMOTIONAL core
-
-**Draw from these dimensions:**
-1. **Specific situation** (not category): "job rejection" not "career", "singleness" not "relationships", "waiting on God" not "faith"
-2. **Emotional core**: forgotten, unseen, unfair, exhausted, failing, stuck, overlooked, invisible, abandoned
-3. **Underlying need**: justice, strength, new start, rest, belonging, hope, validation
+**Rules for session summary:**
+- 3-6 words maximum
+- Combine the situation + emotional core
+- Should feel like a friend remembering, not a filing system
+- Use "&" to connect two concepts if needed
 
 **Good examples:**
-| User shares | Good tags |
-|-------------|-----------|
-| Tired of being single, feels unfair | ["singleness", "injustice", "feeling forgotten"] |
-| Rejected from jobs, confidence dropping | ["rejection", "losing confidence", "need for hope"] |
-| Caring for sick parent, exhausted | ["caregiver exhaustion", "unseen sacrifice", "need for rest"] |
-| Praying but God feels silent | ["waiting on God", "unanswered prayer", "feeling unheard"] |
+| User's struggle | sessionSummary |
+|-----------------|-----------------|
+| Rejected from jobs, confidence dropping | "Job rejection & losing confidence" |
+| Single and feels forgotten by God | "Singleness & feeling forgotten" |
+| Exhausted from caregiving | "Caregiver burnout & feeling unseen" |
+| Praying but God seems silent | "Unanswered prayer & waiting" |
+| Anxious about health diagnosis | "Health anxiety & uncertainty" |
 
-**Bad examples (too generic):**
-- "Faith", "Purpose", "Relationships", "Work", "Anxiety", "Personal"
-- These feel like filing categories, not understanding
+**Bad examples:**
+- "Faith struggles" (too generic)
+- "Feeling bad about work and life and relationships" (too long)
+- "Anxiety" (single word, no context)
 
 **Format in your JSON response:**
-Include "topicTags": ["tag1", "tag2", "tag3"] as a field in your Format 2 response.`;
+Include "sessionSummary": "Your short phrase here" as a field in your Format 2 response.`;
 
 interface ReturningTopicContext {
   context: string;
   label: string;
   previousAnswer?: string;
+}
+
+interface ReturningSessionContext {
+  summary: string; // e.g., "Job rejection & losing confidence"
+  context: string; // The original user input
+  clarifyingAnswer?: string;
 }
 
 interface RequestBody {
@@ -225,7 +228,8 @@ interface RequestBody {
   isRetry?: boolean;
   previousVerses?: string[];
   language?: string;
-  returningTopic?: ReturningTopicContext | null;
+  returningTopic?: ReturningTopicContext | null; // Legacy support
+  returningSession?: ReturningSessionContext | null; // New session-based approach
 }
 
 // Language-specific instructions
@@ -258,6 +262,7 @@ export async function POST(request: NextRequest) {
       previousVerses = [],
       language = "en",
       returningTopic = null,
+      returningSession = null,
     } = body;
 
     // Get language-specific instructions
@@ -274,8 +279,24 @@ export async function POST(request: NextRequest) {
 They then answered my clarifying question with: "${clarifyingAnswer}"
 
 Please provide the full response with validation (acknowledgment + lament scripture + who else felt this + bridge), encouragement (promise scripture + application + purpose), lie (if appropriate), and affirmation.`;
+    } else if (returningSession) {
+      // Returning user who selected a previous session (new approach)
+      userMessage = `This is a RETURNING user who previously came to you about: "${returningSession.summary}"
+
+Their original sharing was: "${returningSession.context}"
+${returningSession.clarifyingAnswer ? `Last time, they clarified: "${returningSession.clarifyingAnswer}"` : ""}
+
+This user has tapped on this topic to revisit it. Generate a warm, brief clarifying question that:
+1. Gently acknowledges they've been here before ("Last time you shared about ${returningSession.summary}...")
+2. Asks what's on their heart today - is this still weighing on them, or is there something new?
+3. Gives them space to share without assuming it's the same issue
+
+Keep your clarifyingQuestion to 2-3 sentences max. Be warm and welcoming.
+Your biblicalContext should briefly acknowledge their return with empathy.
+
+IMPORTANT: Always respond with needsClarification: true for returning users so they can share what's current.`;
     } else if (returningTopic) {
-      // Returning user who selected a previous topic
+      // Legacy: Returning user who selected a previous topic
       userMessage = `This is a RETURNING user who previously shared about: "${returningTopic.context}"
 Topic area: ${returningTopic.label}
 ${returningTopic.previousAnswer ? `Last time, they clarified: "${returningTopic.previousAnswer}"` : ""}
