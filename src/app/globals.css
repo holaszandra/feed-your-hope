@@ -92,8 +92,10 @@ body {
 /* Scripture container with accent bars */
 .scripture-container {
   padding: 24px 16px;
-  margin: 24px 0;
+  margin: 24px auto;
   position: relative;
+  max-width: 32rem; /* max-w-lg equivalent */
+  width: 100%;
 }
 
 .scripture-container::before,
