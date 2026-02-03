@@ -53,17 +53,20 @@ export function WelcomeScreen({ onSubmit, onSessionSelect, isLoading, refreshKey
       {/* Floating gradient overlay - living light effect */}
       <div className="gradient-overlay" />
 
-      {/* Header/Logo */}
+      {/* Header/Logo with tagline */}
       <header className="relative z-10 pt-6 sm:pt-10 md:pt-14 text-center px-6 shrink-0">
         <h1 className="text-2xl sm:text-3xl md:text-4xl font-semibold tracking-wide text-text-primary">
           {t("appName")}
         </h1>
+        <p className="text-sm sm:text-base text-text-primary/70 mt-2">
+          {t("appTagline")}
+        </p>
       </header>
 
       {/* Middle Section - Glowing Scripture Text (fixed height) */}
       <div className="relative z-10 flex items-center justify-center px-6 sm:px-10 h-[30vh] sm:h-[35vh]">
         <p className="glow-text font-semibold text-lg sm:text-2xl md:text-3xl lg:text-4xl text-center leading-relaxed max-w-2xl">
-          {t("appTagline")}
+          {t("welcomeScripture")}
         </p>
       </div>
 

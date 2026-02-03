@@ -7,6 +7,7 @@ export const translations = {
     // App
     appName: "Feed Your Hope",
     appTagline: "Find the right scripture for what you're carrying",
+    welcomeScripture: "Draw close to God, and He will draw close to you.",
 
     // Welcome Screen
     welcomePrompt: "What's weighing on your heart?",
@@ -43,6 +44,7 @@ export const translations = {
     // App
     appName: "Táplád a Reményed",
     appTagline: "Találd meg az Igét ahhoz, amit most hordozol",
+    welcomeScripture: "Közeledjetek Istenhez, és közeledni fog hozzátok.",
 
     // Welcome Screen
     welcomePrompt: "Mi nyomja a szívedet?",
