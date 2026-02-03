@@ -379,11 +379,9 @@ export default function Home() {
 
   return (
     <main className="h-screen w-screen overflow-hidden font-sans">
-      <div className="h-full w-full max-w-2xl mx-auto">
-        <ScreenTransition screenKey={currentScreen}>
-          {renderScreen()}
-        </ScreenTransition>
-      </div>
+      <ScreenTransition screenKey={currentScreen}>
+        {renderScreen()}
+      </ScreenTransition>
     </main>
   );
 }
