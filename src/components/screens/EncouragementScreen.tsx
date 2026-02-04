@@ -1,21 +1,31 @@
 "use client";
 
+import { useState } from "react";
 import type { EncouragementSection } from "@/types";
 import { BackButton } from "@/components/BackButton";
+import { ScriptureRating } from "@/components/ScriptureRating";
 import { useLanguage } from "@/context/LanguageContext";
 
 interface EncouragementScreenProps {
   encouragement: EncouragementSection;
   onNext: () => void;
   onBack: () => void;
+  onRate?: (rating: number) => void;
 }
 
 export function EncouragementScreen({
   encouragement,
   onNext,
   onBack,
+  onRate,
 }: EncouragementScreenProps) {
   const { t } = useLanguage();
+  const [hasRated, setHasRated] = useState(false);
+
+  const handleRate = (rating: number) => {
+    setHasRated(true);
+    onRate?.(rating);
+  };
 
   return (
     <div
@@ -43,10 +53,15 @@ export function EncouragementScreen({
         </div>
 
         {/* Purpose */}
-        <div className="px-6 max-w-lg mx-auto w-full">
+        <div className="px-6 mb-4 max-w-lg mx-auto w-full">
           <p className="reflection-text">
             <span className="emphasis">{encouragement.purpose}</span>
           </p>
+        </div>
+
+        {/* Scripture Rating */}
+        <div className="px-6 mt-2 max-w-lg mx-auto w-full">
+          <ScriptureRating onRate={handleRate} />
         </div>
       </div>
 

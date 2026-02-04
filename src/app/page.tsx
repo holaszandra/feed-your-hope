@@ -275,6 +275,15 @@ export default function Home() {
     trackEvent(EVENTS.AFFIRMATION_VIEWED);
   };
 
+  // Handle scripture rating
+  const handleScriptureRate = (rating: number) => {
+    trackEvent(EVENTS.SCRIPTURE_RATED, {
+      rating,
+      scriptureReference: response?.encouragement?.scripture.reference,
+      userContext: userInput,
+    });
+  };
+
   // Back navigation handlers
   const goBackFromClarifying = () => {
     setCurrentScreen("welcome");
@@ -358,6 +367,7 @@ export default function Home() {
             encouragement={response.encouragement}
             onNext={goToLieOrAffirmation}
             onBack={goBackFromEncouragement}
+            onRate={handleScriptureRate}
           />
         ) : null;
       case "lie":
