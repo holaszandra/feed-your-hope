@@ -380,6 +380,9 @@ export default function Home() {
             affirmation={response.affirmation}
             onDone={handleDone}
             onBack={goBackFromAffirmation}
+            encouragementVerse={response.encouragement?.scripture}
+            userTopic={userInput}
+            clarifyingAnswer={clarifyingAnswer}
           />
         ) : null;
       default:
