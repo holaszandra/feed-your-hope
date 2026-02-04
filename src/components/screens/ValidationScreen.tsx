@@ -57,9 +57,20 @@ export function ValidationScreen({
         </div>
       </div>
 
-      {/* Next hint */}
-      <div className="text-center pb-4 px-6">
-        <span className="text-text-secondary/50 text-sm font-sans">{t("validationContinue")}</span>
+      {/* Next hint - fixed at bottom */}
+      <div className="sticky bottom-0 left-0 right-0 text-center pb-6 pt-4 px-6 bg-gradient-to-t from-bg-validation via-bg-validation to-transparent">
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onNext();
+          }}
+          className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-white/80 backdrop-blur-sm border border-white/50 shadow-sm text-text-secondary hover:bg-white/90 transition-colors text-sm font-medium"
+        >
+          {t("validationContinue")}
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
       </div>
     </div>
   );
